@@ -41,6 +41,21 @@ namespace CabInvoiceGenerator
             }
         }
 
+        public void ADDRides(string userId, Ride[] rides)
+        {
+            try
+            {
+                rideRepository.AddRide(userId, rides);
+            }
+            catch (CabInvoiceException)
+            {
+                if (rides == null)
+                {
+                    throw new CabInvoiceException(CabInvoiceException.ExceptionType.NULL_RIDES, "rides are null");
+                }
+            }
+        }
+
         public double CalculateFare(double distance, int time)
         {
             double totalFare = 0;
@@ -86,6 +101,18 @@ namespace CabInvoiceGenerator
 
             }
             return new InvoiceSummary(rides.Length, totalFare);
+        }
+
+        public InvoiceSummary GetInvoiceSummary(String userId)
+        {
+            try
+            {
+                return this.CalculateFare(rideRepository.getRides(userId));
+            }
+            catch (CabInvoiceException)
+            {
+                throw new CabInvoiceException(CabInvoiceException.ExceptionType.INVALID_USER_ID, "Invalid user id");
+            }
         }
     }
 }
